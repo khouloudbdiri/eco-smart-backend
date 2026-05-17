@@ -1,0 +1,24 @@
+# Données — jamais dans Git
+data/processed/
+data/dataset_ProjetML_2026.csv
+*.pkl
+*.csv
+
+# DVC gère les données
+.dvc/cache/
+
+# Python
+__pycache__/
+*.pyc
+.env
+venv/
+*.egg-info/
+
+# MLflow
+mlruns/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node (frontend)
+node_modules/

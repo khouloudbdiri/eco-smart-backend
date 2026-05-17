@@ -1,0 +1,51 @@
+name: CI/CD Eco-Smart Classifier
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Étape 2 : Installer Python 3.10
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # Étape 3 : Installer les dépendances
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov black flake8 isort httpx
+
+      # Étape 4 : Vérifier le style du code
+      - name: Lint — black (formatage)
+        run: black --check . --line-length 100
+
+      - name: Lint — flake8 (erreurs)
+        run: flake8 . --max-line-length=100 --exclude=node_modules,.git,__pycache__
+
+      - name: Lint — isort (ordre des imports)
+        run: isort --check-only . --profile black
+
+      # Étape 5 : Lancer les tests avec couverture
+      - name: Run tests
+        run: |
+          pytest tests/ -v \
+            --cov=api \
+            --cov-report=term-missing \
+            --cov-fail-under=70
+
+      # Étape 6 : Construire l'image Docker
+      - name: Build Docker image
+        run: docker build -t eco-smart:latest .

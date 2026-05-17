@@ -1,0 +1,37 @@
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+      - src/preprocess.py
+      - data/dataset_ProjetML_2026.csv
+    outs:
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - data/processed/test.csv
+      - data/processed/scaler.pkl
+      - data/processed/label_encoder.pkl
+      - data/processed/encoder_source.pkl
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - data/processed/test.csv
+    outs:
+      - data/processed/best_classifier.pkl
+      - data/processed/best_regressor.pkl
+      - data/processed/pipeline_multimodal.pkl
+      - data/processed/tfidf_vectorizer.pkl
+      - data/processed/nlp_best_classifier.pkl
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - data/processed/test.csv
+      - data/processed/best_classifier.pkl
+    metrics:
+      - data/processed/metrics.json:
+          cache: false
